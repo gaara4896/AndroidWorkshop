@@ -2,12 +2,11 @@ package com.example.root.androidworkshop;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 
 public class DoneToDo extends AppCompatActivity {
 
@@ -19,25 +18,24 @@ public class DoneToDo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_done_to_do);
 
-        //get back arrow to parent activity
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-
         //Link gui component to object
         listView_DoneToDo = (ListView)findViewById(R.id.listView_DoneToDo);
         db = new SQLiteManager(getApplicationContext());
 
         //get the Done to do list from SQLite
-        ArrayList<ToDo> listArray = db.getDoneToDo();
+        Vector<ToDo> vec = db.getDoneToDo();
+        ToDo[] doneToDo = new ToDo[vec.size()];
 
-
-        final String[] toDoArray = new String[listArray.size()];
-        for(int i=0;i<listArray.size();i++)
-        {
-            toDoArray[i]=listArray.get(i).getName();
+        //convert from vector to object array
+        int counter = 0;
+        Iterator i = vec.iterator();
+        while(i.hasNext()){
+            doneToDo[counter] = (ToDo) i.next();
+            counter++;
         }
 
         //Set the listview to the done to do list
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,toDoArray);
-        listView_DoneToDo.setAdapter(listAdapter);
+        ListAdapter adapter = new ListViewFragment(this, doneToDo);
+        listView_DoneToDo.setAdapter(adapter);
     }
 }
